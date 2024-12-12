@@ -5,6 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import silhouette_score
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.metrics import silhouette_score
 
 # Membaca dataset asli
 data = pd.read_csv("top_expensive_leagues.csv")
@@ -34,7 +35,7 @@ print(data.groupby('Cluster_Type')['Cluster'].count())
 
 # Evaluasi kualitas clustering menggunakan silhouette score
 silhouette_avg = silhouette_score(data_scaled, data['Cluster'])
-print(f"\nSilhouette Score untuk {k} cluster: {silhouette_avg:.2f}")
+print(f"\nSilhouette Score untuk {k} cluster: {silhouette_avg:.2f}\n")
 
 # Visualisasi clustering
 plt.figure(figsize=(8, 6))
