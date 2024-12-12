@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import silhouette_score
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -10,38 +11,40 @@ data = pd.read_csv("top_expensive_leagues.csv")
 print("Informasi Dataset:")
 print(data.info())
 
-
 # Normalisasi atribut Revenue (USD) dan Viewership
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data[['Revenue (USD)', 'Viewership']])
 
-# Validasi jumlah cluster
-k = 3
-
-# Clustering menggunakan KMeans
+# Menggunakan 4 cluster untuk clustering
+k = 4
 kmeans = KMeans(n_clusters=k, random_state=42)
 data['Cluster'] = kmeans.fit_predict(data_scaled)
 
 # Menambahkan jenis cluster berdasarkan kombinasi atribut
 data['Cluster_Type'] = data['Cluster'].map({
     0: 'Low Revenue, Low Viewership',
-    1: 'High Revenue, Low Viewership',
-    2: 'High Revenue, High Viewership'
+    1: 'Low Revenue, High Viewership',
+    2: 'High Revenue, Low Viewership',
+    3: 'High Revenue, High Viewership'
 })
 
 # Menampilkan jumlah data per cluster dan jenisnya
 print("\nDistribusi Data per Cluster dengan Jenisnya:")
 print(data.groupby('Cluster_Type')['Cluster'].count())
 
+# Evaluasi kualitas clustering menggunakan silhouette score
+silhouette_avg = silhouette_score(data_scaled, data['Cluster'])
+print(f"\nSilhouette Score untuk {k} cluster: {silhouette_avg:.2f}")
+
 # Visualisasi clustering
 plt.figure(figsize=(8, 6))
 sns.scatterplot(
     x=data_scaled[:, 0],
-    y=data_scaled[:, 1],  # Gunakan Viewership untuk sumbu Y
+    y=data_scaled[:, 1],
     hue=data['Cluster'],
     palette='viridis',
-    s=80,  # Ukuran titik
-    alpha=0.6  # Transparansi
+    s=80,
+    alpha=0.6
 )
 
 # Plot pusat cluster
